@@ -16,3 +16,8 @@ Podemos establecer tamaños fijos, por ejemplo:
 Respecto a la subida por **Chunks**, Supabase la incorpora de forma **nativa mediante un protocolo que se llama TUS** (Tus Resumable Upload Standard). Igualmente, es ajustable, y se puede utilizar de forma que en el proyecto se pueda mover donde se coloca el umbral.
 
 Cambiarlo supone que nos tengamos que saltar la abstracción que ofrece supabase con el formato del cliente, haciendo que el código se vuelva mas complicado, aunque me plantearía implementarlo si tenemos que personalizar mas aspectos de la subida, pudiendo llegar a hacer nuestro propio wrapper personalizado si hace falta.
+
+Supabase tiene un **límite de tamaño de archivo de 50MB**. Por lo que hay que plantear dos cosas:
+
+- Usar el plan pro (hay que pagar).
+- Comprimir también los vídeos a un tamaño máximo de 50MB. Si son vídeos cortos de display no deberiamos de tener problema.
