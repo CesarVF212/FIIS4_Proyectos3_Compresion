@@ -41,6 +41,30 @@ async function uploadToServerFromFile(file: File, name: string) {
   else console.log("Subida exitosa:", data.path);
 }
 
+// ------------------------------------------ //
+// --- FUNCIÓN: SUBIR VIDEO DESDE PUBLIC --- //
+// ------------------------------------------ //
+
+const admitedFormats = ["video/mp4", "video/webp"];
+
+async function uploadVideoToServerFromFile(file: File, name: string) {
+  // Condición de verificación de formato.
+  if (!admitedFormats.includes(file.type)) {
+    console.error("Formato no admitido:", file.type);
+    return;
+  }
+
+  const { data, error } = await supabase.storage
+    .from("imagenes")
+    .upload(`${name}.mp4`, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+  if (error) console.error("Error:", error.message);
+  else console.log("Subida exitosa:", data.path);
+}
+
 // ------------------------------------------------ //
 // --- FUNCIÓN: Obtener url pública de Supabase --- //
 // ------------------------------------------------ //
@@ -59,8 +83,14 @@ interface Images {
   name: string;
 }
 
+interface Videos {
+  url: string;
+  name: string;
+}
+
 export default function Home() {
   const [images, setImages] = useState<Images[]>([]);
+  const [videos, setVideos] = useState<Videos[]>([]);
 
   // ------------------------------------------- //
   // --- USE EFFECT: Subir y comprimir fotos --- //
@@ -68,11 +98,21 @@ export default function Home() {
 
   useEffect(() => {
     const run = async () => {
-      const response = await fetch("/raw.jpg");
-      const blob = await response.blob();
-      const imageFile = new File([blob], "raw.jpg", { type: "image/jpeg" });
+      const responseImage = await fetch("/raw.jpg");
+      const blobImage = await responseImage.blob();
+      const imageFile = new File([blobImage], "raw.jpg", {
+        type: "image/jpeg",
+      });
 
       await uploadToServerFromFile(imageFile, "raw");
+
+      const responseVideo = await fetch("/video.mp4");
+      const blobVideo = await responseVideo.blob();
+      const videoFile = new File([blobVideo], "video.mp4", {
+        type: "video/mp4",
+      });
+
+      await uploadVideoToServerFromFile(videoFile, "video");
 
       const uploadCompressed = async (maxSizeMB: number, name: string) => {
         try {
@@ -103,6 +143,8 @@ export default function Home() {
         { url: getPublicUrl("image0.1MB.jpg"), name: "JPG 0.1MB" },
         { url: getPublicUrl("image0.05MB.jpg"), name: "JPG 0.05MB" },
       ]);
+
+      setVideos([{ url: getPublicUrl("video.mp4"), name: "Video" }]);
     };
 
     // Ejecutamos todo de forma síncrona.
@@ -119,11 +161,13 @@ export default function Home() {
         {images.map((images, i) => (
           <div key={i} className={styles.card}>
             <p>{images.name}</p>
-            <img
-              src={images.url}
-              alt={`imagen-${i}`}
-              className={styles.image}
-            />
+            <img src={images.url} className={styles.image} />
+          </div>
+        ))}
+        {videos.map((videos, i) => (
+          <div key={i} className={styles.card}>
+            <p>{videos.name}</p>
+            <video src={videos.url} className={styles.image} controls />
           </div>
         ))}
       </div>
