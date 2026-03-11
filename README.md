@@ -7,3 +7,4 @@ Esto se puede utilizar de formas diferentes. Siendo una de ellas poder cambiar e
 Podemos establecer tamaños fijos, por ejemplo:
 
 - Las fotos de los venues se guardan en un tamaño de 600x600, si van a ser cuadradas, y se comprimen a un tamaño máximo de 2-5MB.
+- Para otro tipo de fotos quizás es mejor establecer una compresión pero dejar que tengan un formato mas libre.
