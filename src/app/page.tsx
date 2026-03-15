@@ -13,78 +13,36 @@ import styles from "./page.module.css";
 // Supabase.
 import { createClient } from "@supabase/supabase-js";
 
-// Compresión de imagenes.
-import imageCompression from "browser-image-compression";
+// Supabase - Subir vídeos.
+import uploadPhotoFromPublic from "./functions/uploadPhotoFromPublic";
+import uploadVideoFromPublic from "./functions/uploadVideoFromPublic";
+
+// Supabase - Obtener URL's públicas.
+import getImagePublicUrl from "./functions/getImagePublicUrl";
+import getVideoPublicUrl from "./functions/getVideoPublicUrl";
+
+// Buckets.
+const IMAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET;
+const VIDEO_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET;
 
 // ------------------------ //
 // ----CLIENTE SUPABASE --- //
 // ------------------------ //
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY!,
 );
 
-// ------------------------------------------ //
-// --- FUNCIÓN: SUBIR IMAGEN DESDE PUBLIC --- //
-// ------------------------------------------ //
-
-async function uploadToServerFromFile(file: File, name: string) {
-  const { data, error } = await supabase.storage
-    .from("imagenes")
-    .upload(`${name}.jpg`, file, {
-      contentType: file.type,
-      upsert: true,
-    });
-
-  if (error) console.error("Error:", error.message);
-  else console.log("Subida exitosa:", data.path);
-}
-
-// ------------------------------------------ //
-// --- FUNCIÓN: SUBIR VIDEO DESDE PUBLIC --- //
-// ------------------------------------------ //
-
-const admitedFormats = ["video/mp4", "video/webp"];
-
-async function uploadVideoToServerFromFile(file: File, name: string) {
-  // Condición de verificación de formato.
-  if (!admitedFormats.includes(file.type)) {
-    console.error("Formato no admitido:", file.type);
-    return;
-  }
-
-  const { data, error } = await supabase.storage
-    .from("imagenes")
-    .upload(`${name}.mp4`, file, {
-      contentType: file.type,
-      upsert: true,
-    });
-
-  if (error) console.error("Error:", error.message);
-  else console.log("Subida exitosa:", data.path);
-}
-
-// ------------------------------------------------ //
-// --- FUNCIÓN: Obtener url pública de Supabase --- //
-// ------------------------------------------------ //
-
-function getPublicUrl(path: string) {
-  const { data } = supabase.storage.from("imagenes").getPublicUrl(path);
-  return data.publicUrl;
-}
-
 // ------------------------ //
-// --- INTERFÁZ: Imagen --- //
+// --- INTERFAZ: Imagen --- //
 // ------------------------ //
 
 interface Images {
-  url: string;
+  url?: string;
   name: string;
 }
-
 interface Videos {
-  url: string;
+  url?: string;
   name: string;
 }
 
@@ -97,57 +55,51 @@ export default function Home() {
   // ------------------------------------------- //
 
   useEffect(() => {
+    // Return en el caso de no tener los buckets.
+    if (IMAGE_BUCKET == undefined) {
+      console.log(
+        "ERROR: No se encuentra el IMAGE_BUCKET. Añadelo a la lista .env con NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET",
+      );
+      return;
+    }
+    if (VIDEO_BUCKET == undefined) {
+      console.log(
+        "ERROR: No se encuentra el VIDEO_BUCKET. Añadelo a la lista .env con NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET",
+      );
+      return;
+    }
+
     const run = async () => {
+      // Imagen.
       const responseImage = await fetch("/raw.jpg");
       const blobImage = await responseImage.blob();
       const imageFile = new File([blobImage], "raw.jpg", {
         type: "image/jpeg",
       });
 
-      await uploadToServerFromFile(imageFile, "raw");
+      await uploadPhotoFromPublic(supabase, imageFile, "image");
 
+      // Vídeo.
       const responseVideo = await fetch("/video.mp4");
       const blobVideo = await responseVideo.blob();
       const videoFile = new File([blobVideo], "video.mp4", {
         type: "video/mp4",
       });
 
-      await uploadVideoToServerFromFile(videoFile, "video");
-
-      const uploadCompressed = async (maxSizeMB: number, name: string) => {
-        try {
-          const compressed = await imageCompression(imageFile, {
-            maxSizeMB,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true,
-          });
-          await uploadToServerFromFile(compressed, name);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      // Subir todas las imagenes.
-      await uploadCompressed(5, "image5MB");
-      await uploadCompressed(1, "image1MB");
-      await uploadCompressed(0.5, "image0.5MB");
-      await uploadCompressed(0.1, "image0.1MB");
-      await uploadCompressed(0.05, "image0.05MB");
-
-      // Guardar las urls públicas dentro de la interfáz.
+      // Obtenemos las URLS públicas una vez subido y guardamos.
+      await uploadVideoFromPublic(supabase, videoFile, "video");
       setImages([
-        { url: getPublicUrl("raw.jpg"), name: "Original (PNG +- 10MB)" },
-        { url: getPublicUrl("image5MB.jpg"), name: "JPG 5MB" },
-        { url: getPublicUrl("image1MB.jpg"), name: "JPG 1MB" },
-        { url: getPublicUrl("image0.5MB.jpg"), name: "JPG 0.5MB" },
-        { url: getPublicUrl("image0.1MB.jpg"), name: "JPG 0.1MB" },
-        { url: getPublicUrl("image0.05MB.jpg"), name: "JPG 0.05MB" },
+        {
+          url: getImagePublicUrl(supabase, "image.jpg"),
+          name: "COMPRIMIDA A 2MB",
+        },
       ]);
-
-      setVideos([{ url: getPublicUrl("video.mp4"), name: "Video" }]);
+      setVideos([
+        { url: getVideoPublicUrl(supabase, "video.mp4"), name: "Video" },
+      ]);
     };
 
-    // Ejecutamos todo de forma síncrona.
+    // Ejecutamos todo de forma asíncrona.
     run();
   }, []);
 
@@ -158,16 +110,16 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.grid}>
-        {images.map((images, i) => (
+        {images.map((image, i) => (
           <div key={i} className={styles.card}>
-            <p>{images.name}</p>
-            <img src={images.url} className={styles.image} />
+            <p>{image.name}</p>
+            <img src={image.url} className={styles.image} />
           </div>
         ))}
-        {videos.map((videos, i) => (
+        {videos.map((video, i) => (
           <div key={i} className={styles.card}>
-            <p>{videos.name}</p>
-            <video src={videos.url} className={styles.image} controls />
+            <p>{video.name}</p>
+            <video src={video.url} className={styles.image} controls />
           </div>
         ))}
       </div>
