@@ -21,3 +21,14 @@ Supabase tiene un **límite de tamaño de archivo de 50MB**. Por lo que hay que 
 
 - Usar el plan pro (hay que pagar).
 - Comprimir también los vídeos a un tamaño máximo de 50MB. Si son vídeos cortos de display no deberiamos de tener problema.
+
+## Uso:
+
+Lo unico que se necesita para que este repositorio funcione de forma pública es añadir a el .env propio las variables siguientes:
+
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY (para acceso a nivel de usuario, se deberá de cambiar el cliente de Supabase para poder usarla)
+- NEXT_PUBLIC_SUPABASE_SECRET_KEY (acceso a nivel servidor - por defecto)
+
+- NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET
+- NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET

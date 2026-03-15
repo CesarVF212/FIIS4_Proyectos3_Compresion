@@ -12,7 +12,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 const admitedFormats = ["video/mp4", "video/webp"];
 const VIDEO_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET;
 
-export default async function uploadVideoFromPublic(
+export default async function uploadVideo(
   supabase: SupabaseClient,
   file: File,
   name: string,

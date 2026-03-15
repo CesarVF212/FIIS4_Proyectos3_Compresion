@@ -20,7 +20,7 @@ const MAX_WIDTH_PX = 1920;
 // --- FUNCIÓN: SUBIR IMAGEN DESDE PUBLIC --- //
 // ------------------------------------------ //
 
-export default async function uploadPhotoFromPublic(
+export default async function uploadPhoto(
   supabase: SupabaseClient,
   file: File,
   name: string,
