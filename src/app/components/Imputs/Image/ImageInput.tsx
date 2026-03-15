@@ -1,11 +1,24 @@
 "use client";
 
+// --------------------- //
+// --- IMPORTACIONES --- //
+// --------------------- //
+
+// React.
 import { useState } from "react";
+
 // CSS.
 import styles from "../Imputs.module.css";
-// Subir Imagen.
+
+// Cliente Supabase.
 import { supabase } from "../../../supabaseClient";
+
+// Subir Imagen.
 import uploadPhoto from "@/app/functions/uploadPhoto";
+
+// ------------------------- //
+// --- FUNCIÓN PRINCIPAL --- //
+// ------------------------- //
 
 export default function ImageInput() {
   const [file, setFile] = useState<File | null>(null);

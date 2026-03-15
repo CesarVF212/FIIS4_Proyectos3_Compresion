@@ -1,7 +1,12 @@
 "use client";
 
+// --------------------- //
+// --- IMPORTACIONES --- //
+// --------------------- //
+
 // CSS.
 import styles from "./page.module.css";
+
 // Componentes de subida de archivos.
 import ImageInput from "./components/Imputs/Image/ImageInput";
 import VideoInput from "./components/Imputs/Video/VideoInput";

@@ -7,6 +7,7 @@ const IMAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET;
 // ------------------------------------- //
 // --- FUNCIÓN: OBTENER URL PÚBLICA --- //
 // ------------------------------------ //
+
 export default function getImagePublicUrl(
   supabase: SupabaseClient,
   path: string,

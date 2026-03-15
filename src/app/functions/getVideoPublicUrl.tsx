@@ -7,6 +7,7 @@ const VIDEO_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET;
 // ------------------------------------- //
 // --- FUNCIÓN: OBTENER URL PÚBLICA --- //
 // ------------------------------------ //
+
 export default function getVideoPublicUrl(
   supabase: SupabaseClient,
   path: string,

@@ -1,11 +1,24 @@
 "use client";
 
+// --------------------- //
+// --- IMPORTACIONES --- //
+// --------------------- //
+
+// React.
 import { useState } from "react";
+
 // CSS.
 import styles from "../Imputs.module.css";
-// Subir Imagen.
+
+// Cliente Supabase.
 import { supabase } from "../../../supabaseClient";
+
+// Subir Imagen.
 import uploadVideo from "@/app/functions/uploadVideo";
+
+// ------------------------- //
+// --- FUNCIÓN PRINCIPAL --- //
+// ------------------------- //
 
 export default function VideoInput() {
   const [file, setFile] = useState<File | null>(null);
