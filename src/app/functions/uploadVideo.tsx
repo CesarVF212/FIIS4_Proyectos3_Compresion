@@ -29,6 +29,7 @@ export default async function uploadVideo(
     .upload(`${name}.mp4`, file, {
       contentType: file.type,
       upsert: true,
+      cacheControl: "31536000", // 1 año.
     });
 
   if (error) console.error("Error:", error.message);

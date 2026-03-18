@@ -49,6 +49,7 @@ export default async function uploadPhoto(
       .upload(`${name}.jpg`, compressed, {
         contentType: compressed.type,
         upsert: true,
+        cacheControl: "31536000", // 1 año.
       });
   } catch (error) {
     console.log(error);
