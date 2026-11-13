@@ -1,3 +1,47 @@
+# --- ENGLISH ---
+
+# Research on Web Image and Video Compression
+
+This research project investigates how to compress and upload images and videos for a web app, using Supabase Storage and the image-compression library.
+It summarizes the findings on image quality and file sizes, chunked video uploads (TUS), and Supabase's file size limits, and explains the environment setup needed to run the repository.
+
+---
+
+## Image Conclusions
+
+An image with an approximate resolution of 2K **loses much of its sharpness when compressed below 5MB**.
+
+This can be used in different ways. One of them is resizing, which can be adjusted using the image-compression library for things like profile pictures.
+
+We can set fixed sizes, for example:
+
+- Venue photos are stored at a size of 600x600 if they are going to be square, and are compressed to a maximum size of 2-5MB.
+- For other types of photos, it may be better to set a compression level but allow a more flexible format.
+
+## Video Conclusions
+
+Regarding upload by **chunks**, Supabase supports it **natively through a protocol called TUS** (Tus Resumable Upload Standard). It is also configurable, and it can be used so that the threshold's position can be moved within the project.
+
+Changing it means bypassing the abstraction that Supabase offers with the client format, which makes the code more complicated. Even so, I would consider implementing it if we need to customize more aspects of the upload, possibly even building our own custom wrapper if necessary.
+
+Supabase has a **file size limit of 50MB**. So two options need to be considered:
+
+- Use the Pro plan (this requires payment).
+- Also compress videos to a maximum size of 50MB. If they are short display videos, we should not have a problem.
+
+## Usage
+
+The only thing needed for this repository to work publicly is to add the following variables to your own `.env` file:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` (for user-level access; the Supabase client must be changed in order to use it)
+- `NEXT_PUBLIC_SUPABASE_SECRET_KEY` (server-level access — default)
+
+- `NEXT_PUBLIC_SUPABASE_IMAGE_BUCKET`
+- `NEXT_PUBLIC_SUPABASE_VIDEO_BUCKET`
+
+# --- SPANISH ---
+
 # Trabajo de investigación acerca de compresión de imagenes web.
 
 ## Conclusiones Imagenes:
